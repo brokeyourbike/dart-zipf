@@ -1,6 +1,8 @@
 # dart_zipf
 
+[![Actions Status](https://github.com/flexremit/app/workflows/build/badge.svg)](https://github.com/flexremit/app/actions?query=workflow%3Abuild)
 [![Codecov](https://codecov.io/github/brokeyourbike/dart_zipf/coverage.svg?branch=master)](https://codecov.io/gh/brokeyourbike/dart_zipf)
+[![License: Apache-2.0](https://img.shields.io/github/license/brokeyourbike/dart_zipf)](https://github.com/brokeyourbike/dart_zipf/blob/main/LICENSE)
 
 Dart implementation of a
 [Zipf-distributed](https://en.wikipedia.org/wiki/Zipf's_law) random
