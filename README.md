@@ -1,4 +1,4 @@
-# dart_zipf
+# dart-zipf
 
 [![Actions Status](https://github.com/flexremit/app/workflows/build/badge.svg)](https://github.com/flexremit/app/actions?query=workflow%3Abuild)
 [![Codecov](https://codecov.io/github/brokeyourbike/dart_zipf/coverage.svg?branch=master)](https://codecov.io/gh/brokeyourbike/dart_zipf)
