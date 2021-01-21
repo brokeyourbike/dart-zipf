@@ -14,3 +14,5 @@ written in Java. It is based on the method described by Wolfgang Hörmann and Ge
 in [*Rejection-inversion to generate variates from monotone discrete
 distributions*](https://dl.acm.org/citation.cfm?id=235029) from *ACM Transactions on Modeling
 and Computer Simulation (TOMACS) 6.3 (1996)*.
+
+Inspired by [rust-zipf](https://github.com/jonhoo/rust-zipf)
