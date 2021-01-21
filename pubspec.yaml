@@ -10,6 +10,7 @@ environment:
 
 dependencies:
   meta: ^1.1.8
+  scidart: ^0.0.1-dev.9
 
 dev_dependencies:
   coverage: ^0.14.1
