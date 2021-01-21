@@ -28,7 +28,7 @@ class Zipf extends Sampler {
   /// "Rejection-inversion to generate variates from monotone discrete
   /// distributions", ACM Transactions on Modeling and Computer Simulation
   /// (TOMACS) 6.3 (1996): 169-184.
-  double sample() {
+  int sample() {
     // The paper describes an algorithm for exponents larger than 1
     // (Algorithm ZRI).
     // The original method uses
@@ -53,14 +53,14 @@ class Zipf extends Sampler {
       // u is uniformly distributed in (hIntegralX1, hIntegralNumberOfElements]
 
       var x = hIntegralInverse(u);
-      var k = (x + 0.5);
+      var k = (x + 0.5).toInt();
 
       // Limit [k] to the range [1, numberOfElements] if it would be outside
       // due to numerical inaccuracies.
       if (k < 1) {
         k = 1;
       } else if (k > numberOfElements) {
-        k = numberOfElements.toDouble();
+        k = numberOfElements;
       }
 
       // Here, the distribution of k is given by:
@@ -147,7 +147,7 @@ class Zipf extends Sampler {
   }
 
   /// `h(x) = 1 / x^exponent`
-  double h(final double x) {
+  double h(final int x) {
     return math.exp(-exponent * math.log(x));
   }
 
