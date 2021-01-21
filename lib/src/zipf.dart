@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'package:scidart/numdart.dart' as numdart;
 
 import 'sampler.dart';
 
@@ -11,16 +10,36 @@ class Zipf extends Sampler {
   ///
   /// Note that both the number of elements
   /// and the exponent must be greater than 0.
-  Zipf(this.numberOfElements, this.exponent)
+  Zipf(int numberOfElements, double exponent)
       : assert(numberOfElements != null),
         assert(exponent != null),
         assert(numberOfElements > 0),
         assert(exponent > 0.0),
+        _numberOfElements = numberOfElements.toDouble(),
+        _exponent = exponent,
         super(math.Random()) {
-    hIntegralX1 = hIntegral(1.5) - 1;
-    hIntegralNumberOfElements = hIntegral(numberOfElements + 0.5);
-    s = 2 - hIntegralInverse(hIntegral(2.5) - h(2));
+    _hIntegralX1 = Zipf.hIntegral(1.5, _exponent) - 1.0;
+    _hIntegralNumberOfElements =
+        Zipf.hIntegral(_numberOfElements + 0.5, _exponent);
+    _s = 2.0 -
+        Zipf.hIntegralInverse(
+            Zipf.hIntegral(2.5, _exponent) - Zipf.h(2.0, _exponent), _exponent);
   }
+
+  /// Number of elements
+  final double _numberOfElements;
+
+  /// Exponent parameter of the distribution
+  final double _exponent;
+
+  /// `hIntegral(1.5) - 1`
+  double _hIntegralX1;
+
+  /// `hIntegral(numberOfElements + 0.5)`
+  double _hIntegralNumberOfElements;
+
+  /// `hIntegralInverse(hIntegral(2.5) - h(2)`
+  double _s;
 
   /// Rejection inversion sampling method for a discrete, bounded Zipf
   /// distribution that is based on the method described in Wolfgang Hörmann
@@ -48,20 +67,23 @@ class Zipf extends Sampler {
     // This explains why the implementation looks slightly different.
 
     while (true) {
-      final u = hIntegralNumberOfElements +
-          nextDouble() * (hIntegralX1 - hIntegralNumberOfElements);
+      final u = _hIntegralNumberOfElements +
+          nextDouble() * (_hIntegralX1 - _hIntegralNumberOfElements);
       // u is uniformly distributed in (hIntegralX1, hIntegralNumberOfElements]
 
-      var x = hIntegralInverse(u);
-      var k = (x + 0.5).toInt();
+      final x = Zipf.hIntegralInverse(u, _exponent);
 
       // Limit [k] to the range [1, numberOfElements] if it would be outside
       // due to numerical inaccuracies.
-      if (k < 1) {
-        k = 1;
-      } else if (k > numberOfElements) {
-        k = numberOfElements;
+      var k64 = x;
+      if (k64 < 1.0) {
+        k64 = 1.0;
+      } else if (k64 > _numberOfElements) {
+        k64 = _numberOfElements;
       }
+
+      // float -> integer rounds towards zero
+      var k = math.max(1, k64.toInt()).toInt();
 
       // Here, the distribution of k is given by:
       //
@@ -70,7 +92,8 @@ class Zipf extends Sampler {
       //
       //   where C = 1 / (hIntegralNumberOfElements - hIntegralX1)
 
-      if (k - x <= s || u >= hIntegral(k + 0.5) - h(k)) {
+      if (k64 - x <= _s ||
+          u >= Zipf.hIntegral(k64 + 0.5, _exponent) - Zipf.h(k64, _exponent)) {
         // Case k = 1:
         //
         //  The right inequality is always true, because replacing k by 1 gives
@@ -114,77 +137,84 @@ class Zipf extends Sampler {
     }
   }
 
-  /// Number of elements
-  final int numberOfElements;
-
-  /// Exponent parameter of the distribution
-  final double exponent;
-
-  /// `hIntegral(1.5) - 1`
-  double hIntegralX1;
-
-  /// `hIntegral(numberOfElements + 0.5)`
-  double hIntegralNumberOfElements;
-
-  /// `hIntegralInverse(hIntegral(2.5) - h(2)`
-  double s;
-
   /// `H(x)` is an integral function of `h(x)`,
   /// the derivative of `H(x)`is `h(x)`.
-  double hIntegral(final double x) {
+  static double hIntegral(double x, double exponent) {
     final logX = math.log(x);
-    return helper2((1 - exponent) * logX) * logX;
+    return Zipf.helper2((1 - exponent) * logX) * logX;
+  }
+
+  /// `h(x) = 1 / x^exponent`
+  static double h(double x, double exponent) {
+    return math.exp(-exponent * math.log(x));
+  }
+
+  /// The inverse function of `H(x)`.
+  static double hIntegralInverse(double x, double exponent) {
+    var t = x * (1.0 - exponent);
+    if (t < -1.0) {
+      // Limit value to the range [-1, +inf).
+      // t could be smaller than -1 in some rare cases due to numerical errors.
+      t = -1.0;
+    }
+    return math.exp(Zipf.helper1(t) * x);
   }
 
   /// Helper function that calculates `log(1 + x) / x`.
   /// A Taylor series expansion is used, if [x] is close to 0.
   static double helper1(final double x) {
     if (x.abs() > 1e-8) {
-      return log1p(x) / x;
+      return Zipf.log1p(x) / x;
     } else {
-      return 1 - x * (0.5 - x * (0.33333333333333333 - 0.25 * x));
+      return 1.0 - x * (0.5 - x * ((1.0 / 3.0) - 0.25 * x));
     }
-  }
-
-  /// `h(x) = 1 / x^exponent`
-  double h(final int x) {
-    return math.exp(-exponent * math.log(x));
-  }
-
-  /// The inverse function of `H(x)`.
-  double hIntegralInverse(final double x) {
-    var t = x * (1 - exponent);
-    if (t < -1) {
-      // Limit value to the range [-1, +inf).
-      // t could be smaller than -1 in some rare cases due to numerical errors.
-      t = -1;
-    }
-    return math.exp(helper1(t) * x);
   }
 
   /// Helper function to calculate `(exp(x) - 1) / x`.
   /// A Taylor series expansion is used, if [x] is close to 0.
   static double helper2(final double x) {
     if (x.abs() > 1e-8) {
-      return numdart.expm1(x) / x;
+      return Zipf.expm1(x) / x;
     } else {
-      return 1 + x * 0.5 * (1 + x * 0.33333333333333333 * (1 + 0.25 * x));
+      return 1.0 + x * 0.5 * (1.0 + x * (1.0 / 3.0) * (1 + 0.25 * x));
     }
   }
 
-  /// Calculates logn 1+x
+  /// Computes log(x + 1)
   static double log1p(double x) {
-    if (x.isInfinite && !x.isNegative) {
-      return x;
-    } else {
-      final u = 1 + x;
-      final d = u - 1;
+    if (x.isNaN) {
+      return double.nan;
+    }
 
-      if (d == 0) {
-        return x;
+    if (x.isInfinite && !x.isNegative) {
+      return double.infinity;
+    }
+
+    if (x == -1.0) {
+      return -double.infinity;
+    }
+
+    if (x < -1.0) {
+      return double.nan;
+    }
+
+    return math.log(x + 1.0);
+  }
+
+  /// Computes exp(x) - 1
+  static double expm1(double x) {
+    if (x.isNaN) {
+      return double.nan;
+    }
+
+    if (x.isInfinite) {
+      if (x.isNegative) {
+        return -1.0;
       } else {
-        return math.log(u) * x / d;
+        return double.infinity;
       }
     }
+
+    return math.exp(x) - 1;
   }
 }
