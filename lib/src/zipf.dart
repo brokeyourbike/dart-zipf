@@ -18,12 +18,9 @@ class Zipf extends Sampler {
         _numberOfElements = numberOfElements,
         _exponent = exponent,
         super(math.Random()) {
-    _hIntegralX1 = Zipf.hIntegral(1.5, _exponent) - 1.0;
-    _hIntegralNumberOfElements =
-        Zipf.hIntegral(_numberOfElements + 0.5, _exponent);
-    _s = 2.0 -
-        Zipf.hIntegralInverse(
-            Zipf.hIntegral(2.5, _exponent) - Zipf.h(2.0, _exponent), _exponent);
+    _hIntegralX1 = hIntegral(1.5) - 1.0;
+    _hIntegralNumberOfElements = hIntegral(_numberOfElements + 0.5);
+    _s = 2.0 - hIntegralInverse(hIntegral(2.5) - h(2.0));
   }
 
   /// Number of elements
@@ -71,7 +68,7 @@ class Zipf extends Sampler {
           nextDouble() * (_hIntegralX1 - _hIntegralNumberOfElements);
       // u is uniformly distributed in (hIntegralX1, hIntegralNumberOfElements]
 
-      final x = Zipf.hIntegralInverse(u, _exponent);
+      final x = hIntegralInverse(u);
 
       // Limit [k] to the range [1, numberOfElements] if it would be outside
       // due to numerical inaccuracies.
@@ -92,8 +89,7 @@ class Zipf extends Sampler {
       //
       //   where C = 1 / (hIntegralNumberOfElements - hIntegralX1)
 
-      if (k64 - x <= _s ||
-          u >= Zipf.hIntegral(k64 + 0.5, _exponent) - Zipf.h(k64, _exponent)) {
+      if (k64 - x <= _s || u >= hIntegral(k64 + 0.5) - h(k64)) {
         // Case k = 1:
         //
         //  The right inequality is always true, because replacing k by 1 gives
@@ -138,7 +134,7 @@ class Zipf extends Sampler {
   }
 
   /// Computes the cumulative distribution (CDF) of the distribution at [x],
-  ///  i.e. P(X ≤ x).
+  ///  i.e. `P(X ≤ x)`.
   double cumulativeDistribution(double x) {
     if (x < 1) {
       return 0.0;
@@ -148,7 +144,7 @@ class Zipf extends Sampler {
         generalHarmonic(_numberOfElements, _exponent);
   }
 
-  /// Computes the probability mass (PMF) at [k], i.e. P(X = k).
+  /// Computes the probability mass (PMF) at [k], i.e. `P(X = k)`.
   double probability(int k) {
     return (1.0 / math.pow(k, _exponent)) /
         generalHarmonic(_numberOfElements, _exponent);
@@ -160,7 +156,8 @@ class Zipf extends Sampler {
         generalHarmonic(_numberOfElements, _exponent);
   }
 
-  /// Compute the generalized harmonic number of order n of m. (1 + 1/2^m + 1/3^m + ... + 1/n^m)
+  /// Compute the generalized harmonic number of order n of m.
+  /// `(1 + 1/2^m + 1/3^m + ... + 1/n^m)`
   static double generalHarmonic(int n, double m) {
     var sum = 0.0;
     for (var i = 0; i < n; i++) {
@@ -171,25 +168,25 @@ class Zipf extends Sampler {
 
   /// `H(x)` is an integral function of `h(x)`,
   /// the derivative of `H(x)`is `h(x)`.
-  static double hIntegral(double x, double exponent) {
+  double hIntegral(double x) {
     final logX = math.log(x);
-    return Zipf.helper2((1 - exponent) * logX) * logX;
+    return Zipf.helper2((1 - _exponent) * logX) * logX;
   }
 
   /// `h(x) = 1 / x^exponent`
-  static double h(double x, double exponent) {
-    return math.exp(-exponent * math.log(x));
+  double h(double x) {
+    return math.exp(-_exponent * math.log(x));
   }
 
   /// The inverse function of `H(x)`.
-  static double hIntegralInverse(double x, double exponent) {
-    var t = x * (1.0 - exponent);
+  double hIntegralInverse(double x) {
+    var t = x * (1.0 - _exponent);
     if (t < -1.0) {
       // Limit value to the range [-1, +inf).
       // t could be smaller than -1 in some rare cases due to numerical errors.
       t = -1.0;
     }
-    return math.exp(Zipf.helper1(t) * x);
+    return math.exp(helper1(t) * x);
   }
 
   /// Helper function that calculates `log(1 + x) / x`.
