@@ -48,8 +48,16 @@ void main() {
       expect(() => Zipf(null, 1.0), throwsA(isA<AssertionError>()));
     });
 
+    test('requires numberOfElements > 0', () async {
+      expect(() => Zipf(-1, 1.0), throwsA(isA<AssertionError>()));
+    });
+
     test('requires exponent', () async {
       expect(() => Zipf(1, null), throwsA(isA<AssertionError>()));
+    });
+
+    test('requires exponent > 0', () async {
+      expect(() => Zipf(1, -1.0), throwsA(isA<AssertionError>()));
     });
 
     test('log1p', () async {
@@ -74,6 +82,25 @@ void main() {
       testAlpha(10, 2.00);
       testAlpha(10, 3.00);
       testAlpha(10, 1.08);
+    });
+
+    test('can get cumulativeDistribution at point', () async {
+      var z = Zipf(10, 2.0);
+      expect(z.cumulativeDistribution(2), 0.8065724784830178);
+    });
+
+    test('can get probability at point', () async {
+      var z = Zipf(10, 2.0);
+      expect(z.probability(2), 0.16131449569660355);
+    });
+
+    test('can get mean', () async {
+      var z = Zipf(10, 2.0);
+      expect(z.mean(), 1.8899401472010013);
+    });
+
+    test('compute the generalized harmonic number of order n of m', () async {
+      expect(Zipf.generalHarmonic(10, 2.0), 1.5497677311665408);
     });
   });
 }
