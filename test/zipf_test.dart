@@ -8,22 +8,14 @@ Iterable<int> get positiveIntegers sync* {
   while (true) yield i++;
 }
 
-void testAlpha(double alpha) {
-  var n = 100;
-
+void testAlpha(int n, double alpha) {
   var zipf = Zipf(n, alpha);
 
   // as the alpha increases, we need more samples,
   // since the frequency in the tail grows so low
-  var samples = (math.pow(2.0, alpha) * 500000.0).toInt();
+  var samples = (math.pow(2.0, alpha) * 50000.0).toInt();
 
-  // ignore: omit_local_variable_types
-  double harmonic = positiveIntegers
-      .skip(1)
-      .take(n)
-      .toList()
-      .map((i) => math.pow((1.0 / i), alpha).toDouble())
-      .fold(0.0, (prev, element) => prev + element);
+  var harmonic = Zipf.generalHarmonic(n, alpha);
 
   var buckets = <int, int>{};
   for (var i = 0; i < samples; i++) {
@@ -78,10 +70,10 @@ void main() {
     });
 
     test('valid generation', () async {
-      testAlpha(1.00);
-      testAlpha(2.00);
-      testAlpha(3.00);
-      testAlpha(1.08);
+      testAlpha(10, 1.00);
+      testAlpha(10, 2.00);
+      testAlpha(10, 3.00);
+      testAlpha(10, 1.08);
     });
   });
 }
