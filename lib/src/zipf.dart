@@ -15,7 +15,7 @@ class Zipf extends Sampler {
         assert(exponent != null),
         assert(numberOfElements > 0),
         assert(exponent > 0.0),
-        _numberOfElements = numberOfElements.toDouble(),
+        _numberOfElements = numberOfElements,
         _exponent = exponent,
         super(math.Random()) {
     _hIntegralX1 = Zipf.hIntegral(1.5, _exponent) - 1.0;
@@ -27,7 +27,7 @@ class Zipf extends Sampler {
   }
 
   /// Number of elements
-  final double _numberOfElements;
+  final int _numberOfElements;
 
   /// Exponent parameter of the distribution
   final double _exponent;
@@ -79,7 +79,7 @@ class Zipf extends Sampler {
       if (k64 < 1.0) {
         k64 = 1.0;
       } else if (k64 > _numberOfElements) {
-        k64 = _numberOfElements;
+        k64 = _numberOfElements.toDouble();
       }
 
       // float -> integer rounds towards zero
@@ -135,6 +135,38 @@ class Zipf extends Sampler {
         return k;
       }
     }
+  }
+
+  /// Computes the cumulative distribution (CDF) of the distribution at [x],
+  ///  i.e. P(X ≤ x).
+  double cumulativeDistribution(double x) {
+    if (x < 1) {
+      return 0.0;
+    }
+
+    return generalHarmonic(x.toInt(), _exponent) /
+        generalHarmonic(_numberOfElements, _exponent);
+  }
+
+  /// Computes the probability mass (PMF) at [k], i.e. P(X = k).
+  double probability(int k) {
+    return (1.0 / math.pow(k, _exponent)) /
+        generalHarmonic(_numberOfElements, _exponent);
+  }
+
+  /// Gets the mean of the distribution.
+  double mean() {
+    return generalHarmonic(_numberOfElements, _exponent - 1.0) /
+        generalHarmonic(_numberOfElements, _exponent);
+  }
+
+  /// Compute the generalized harmonic number of order n of m. (1 + 1/2^m + 1/3^m + ... + 1/n^m)
+  static double generalHarmonic(int n, double m) {
+    var sum = 0.0;
+    for (var i = 0; i < n; i++) {
+      sum += math.pow(i + 1, -m).toDouble();
+    }
+    return sum;
   }
 
   /// `H(x)` is an integral function of `h(x)`,
