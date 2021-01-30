@@ -1,6 +1,6 @@
 # dart-zipf
 
-[![Actions Status](https://github.com/flexremit/app/workflows/build/badge.svg)](https://github.com/flexremit/app/actions?query=workflow%3Abuild)
+[![Actions Status](https://github.com/brokeyourbike/dart-zipf/workflows/build/badge.svg)](https://github.com/brokeyourbike/dart-zipf/actions?query=workflow%3Abuild)
 [![codecov](https://codecov.io/gh/brokeyourbike/dart-zipf/branch/main/graph/badge.svg?token=0T3FR74Q0V)](https://codecov.io/gh/brokeyourbike/dart-zipf)
 [![License: Apache-2.0](https://img.shields.io/github/license/brokeyourbike/dart-zipf)](https://github.com/brokeyourbike/dart-zipf/blob/main/LICENSE)
 
