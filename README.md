@@ -3,9 +3,7 @@
 [![Actions Status](https://github.com/brokeyourbike/dart-zipf/workflows/build/badge.svg)](https://github.com/brokeyourbike/dart-zipf/actions?query=workflow%3Abuild)
 [![codecov](https://codecov.io/gh/brokeyourbike/dart-zipf/branch/main/graph/badge.svg?token=0T3FR74Q0V)](https://codecov.io/gh/brokeyourbike/dart-zipf)
 
-Dart implementation of a
-[Zipf-distributed](https://en.wikipedia.org/wiki/Zipf's_law) random
-number generator.
+Dart implementation of a [Zipf-distributed](https://en.wikipedia.org/wiki/Zipf's_law) random number generator.
 
 This implementation is effectively a direct port of Apache Common's
 [RejectionInversionZipfSampler](https://github.com/apache/commons-rng/blob/6a1b0c16090912e8fc5de2c1fb5bd8490ac14699/commons-rng-sampling/src/main/java/org/apache/commons/rng/sampling/distribution/RejectionInversionZipfSampler.java),
