@@ -20,5 +20,5 @@ Inspired by [rust-zipf](https://github.com/jonhoo/rust-zipf)
 
 ## License
 
-[Apache-2.0e License](https://github.com/brokeyourbike/dart-zipf/blob/main/LICENSE)
+[Apache-2.0 License](https://github.com/brokeyourbike/dart-zipf/blob/main/LICENSE)
 
