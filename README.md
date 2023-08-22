@@ -1,5 +1,6 @@
 # dart-zipf
 
+![Pub Version (including pre-releases)](https://img.shields.io/pub/v/zipf)
 [![Actions Status](https://github.com/brokeyourbike/dart-zipf/workflows/build/badge.svg)](https://github.com/brokeyourbike/dart-zipf/actions?query=workflow%3Abuild)
 [![codecov](https://codecov.io/gh/brokeyourbike/dart-zipf/branch/main/graph/badge.svg?token=0T3FR74Q0V)](https://codecov.io/gh/brokeyourbike/dart-zipf)
 
